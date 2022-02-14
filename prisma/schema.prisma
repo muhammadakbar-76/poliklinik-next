@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+  nik String @unique
+  name String
+  password String
+  phone String @db.VarChar(13)
+  role Role @default(User)
+  catMedsPas Cat_Medis[] @relation(name: "pasienRel")
+  catMedsDok Cat_Medis[] @relation(name: "dokterRel")
+  catBeliObat Cat_Beli_Obat[]
+}
+
+model Penyakit {
+  id Int @id @default(autoincrement())
+  name String @unique
+  catMeds Cat_Medis[]
+}
+
+model Obat {
+  id Int @id @default(autoincrement())
+  name String @unique
+  price Int
+  catMeds Cat_Medis[]
+  catBeliObat Cat_Beli_Obat[]
+}
+
+model Cat_Medis {
+  id Int @id @default(autoincrement())
+  status Status @default(Lanjut)
+  tgl DateTime @default(now())
+  catatan String @db.Text()
+  pasien User @relation(fields: [pasienId], references: [id], name: "pasienRel")
+  pasienId Int
+  dokter User @relation(fields: [dokterId], references: [id], name: "dokterRel")
+  dokterId Int
+  penyakit Penyakit @relation(fields: [penyakitId], references: [id])
+  penyakitId Int
+  obat Obat @relation(fields: [obatId], references: [id])
+  obatId Int
+  catBeliObat Cat_Beli_Obat?
+}
+
+model Cat_Beli_Obat {
+  id Int @id @default(autoincrement())
+  jumlah Int @db.TinyInt()
+  total Int
+  pasien User @relation(fields: [pasienId], references: [id])
+  pasienId Int
+  obat Obat @relation(fields: [obatId], references: [id])
+  obatId Int
+  catMed Cat_Medis @relation(fields: [catMedId], references: [id])
+  catMedId Int @unique
+}
+
+enum Role {
+  User
+  Admin
+  Dokter
+  Apoteker
+}
+
+enum Status {
+  Lanjut
+  Sembuh
+}
