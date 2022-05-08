@@ -1,9 +1,17 @@
-import type { NextPage } from 'next'
+import type { GetStaticProps, NextPage } from 'next';
+
+export const getStaticProps: GetStaticProps = () => {
+  return {
+    redirect: {
+      permanent: false,
+      destination: "/protected"
+    },
+    props: {}
+  }
+}
 
 const Home: NextPage = () => {
-  return (
-    <h1 className="text-4xl">Hello World</h1>
-  )
+  return <noscript></noscript>
 }
 
 export default Home

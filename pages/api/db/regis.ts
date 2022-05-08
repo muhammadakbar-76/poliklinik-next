@@ -20,7 +20,6 @@ export default async function handler(
       }
     });
     if (user != null) {
-      client.$disconnect;
       return res.status(409).json({message: "Nik Existed"});
     }
     await client.user.create({
@@ -28,11 +27,11 @@ export default async function handler(
         nik,name,phone,password: bcrypt.hashSync(password,12)
       }
     })
-    client.$disconnect;
     return res.status(200).json({message: "Register Completed"});
   } catch (error) {
-    client.$disconnect;
     return res.status(500).json({message: error});
+  } finally {
+   await client.$disconnect();
   }
     
 }
